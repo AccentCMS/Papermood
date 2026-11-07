@@ -44,16 +44,16 @@ accent serve-static --dir /tmp/papermood-demo --base-path /Papermood --no-tls
 Install the theme with the Accent CLI:
 
 ```bash
-accent theme list             # show the available themes
-accent theme install Papermood
+accent theme list --remote    # show the hub registry's themes
+accent theme install papermood
 ```
 
 As an alternative, copy this directory into the `themes/` folder of your
-site. In both cases, set the theme in `config.yaml`:
+site as `papermood`. In both cases, set the theme in `config.yaml`:
 
 ```yaml
 theme:
-  name: Papermood
+  name: papermood
   directory: ./themes
 ```
 

@@ -4,4 +4,5 @@ demo/.accent/
 demo/.media-cache/
 demo/.diagram-cache/
 demo/serve.log
+dist/
 .DS_Store
