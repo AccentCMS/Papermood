@@ -1,0 +1,58 @@
+{%- extends "base.html.jinja" -%}
+{%- from "_macros/post.jinja" import entry -%}
+{%- from "_macros/i18n.jinja" import t -%}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- set lang = site.current_language -%}
+
+{% block body_class %}list{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    {% include "partials/breadcrumbs.html.jinja" %}
+    <h1>
+        {{ page.title }}
+        {%- if pm.show_rss_in_list and site.url %}
+        {%- for feed in feed_outputs() %}
+        {%- if loop.first %}
+        <a href="{{ url(feed.path) }}" title="RSS" aria-label="RSS">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" height="23" aria-hidden="true">
+                <path d="M4 11a9 9 0 0 1 9 9" />
+                <path d="M4 4a16 16 0 0 1 16 16" />
+                <circle cx="5" cy="19" r="1" />
+            </svg>
+        </a>
+        {%- endif %}
+        {%- endfor %}
+        {%- endif %}
+    </h1>
+    {% if page.lead %}
+    <div class="post-description">{{ page.lead }}</div>
+    {% endif %}
+</header>
+
+{% if page.content | trim %}
+<div class="post-content md-content">
+    {{ page.content | safe }}
+</div>
+{% endif %}
+
+{#- A `content:` collection in the page's frontmatter drives the listing and
+    its pagination; without one, the page's children are listed. -#}
+{% set posts = page.collection if page.collection else (page.children | selectattr("date") | sort(attribute="date", reverse=true) | list) %}
+{% for p in posts %}
+{{ entry(p, pm, lang) }}
+{% endfor %}
+
+{% if page.pagination and page.pagination.total_pages > 1 %}
+<footer class="page-footer">
+    <nav class="pagination" aria-label="{{ t(lang, 'pagination') }}">
+        {% if page.pagination.prev_url %}
+        <a class="prev" href="{{ page.pagination.prev_url }}">&laquo;&nbsp;{{ t(lang, 'prev') }}&nbsp;{{ page.pagination.current_page - 1 }}/{{ page.pagination.total_pages }}</a>
+        {% endif %}
+        {% if page.pagination.next_url %}
+        <a class="next" href="{{ page.pagination.next_url }}">{{ t(lang, 'next') }}&nbsp;{{ page.pagination.current_page + 1 }}/{{ page.pagination.total_pages }}&nbsp;&raquo;</a>
+        {% endif %}
+    </nav>
+</footer>
+{% endif %}
+{% endblock %}

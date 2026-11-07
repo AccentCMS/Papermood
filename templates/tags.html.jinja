@@ -1,0 +1,20 @@
+{%- extends "base.html.jinja" -%}
+{%- set lang = site.current_language -%}
+
+{% block title %}{{ 'Tags' if not page.title else page.title }} | {{ site.name }}{% endblock %}
+
+{% block body_class %}list{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <h1>{{ page.title | default('Tags') }}</h1>
+</header>
+
+<ul class="terms-tags">
+    {% for term in taxonomy.terms %}
+    <li>
+        <a href="{{ term_url(taxonomy.name | default('tags'), term.name) }}">{{ term.label }} <sup><strong>{{ term.count }}</strong></sup></a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

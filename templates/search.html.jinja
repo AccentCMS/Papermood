@@ -1,0 +1,29 @@
+{%- extends "base.html.jinja" -%}
+{%- from "_macros/i18n.jinja" import t -%}
+{%- set lang = site.current_language -%}
+
+{% block body_class %}list{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <h1>{{ page.title }}
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+    </h1>
+    {% if page.lead %}
+    <div class="post-description">{{ page.lead }}</div>
+    {% endif %}
+</header>
+
+<div class="searchbox">
+    {{ search_form(page.custom.placeholder | default(t(lang, 'search_placeholder') | string), 10, no_results=t(lang, 'no_results') | string, results_label=t(lang, 'search_results') | string) }}
+</div>
+
+{% if page.content | trim %}
+<div class="post-content md-content">
+    {{ page.content | safe }}
+</div>
+{% endif %}
+{% endblock %}

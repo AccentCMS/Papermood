@@ -1,0 +1,91 @@
+# Papermood demo site.
+#
+# Local preview, from this directory (the theme is the repo root, so the
+# theme directory is two levels up -- the folder that contains the
+# `Papermood` checkout):
+#
+#   accent serve --no-tls
+#
+# The GitHub Pages deploy (.github/workflows/gh-pages.yml) builds this site
+# with --base-url, which prefixes every internal URL with the project path.
+site:
+  name: Papermood
+  description: A fast, clean Accent CMS blog theme in the spirit of PaperMod.
+  url: http://127.0.0.1:4477
+  language: en            # the default language owns the plain URLs
+  languages: [en, de, fr] # two or more entries switch i18n on
+  extra:
+    papermood:
+      default_theme: auto
+      show_backlinks: true  # "Pages linking here" from [[wiki links]]
+      # A sheet of paper with a folded corner -- the "paper" in Papermood.
+      label_icon_svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="26" height="26" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="12" fill="currentColor" opacity="0.12"/><path d="M22 14h14l8 8v28H22z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="M36 14v8h8" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="M29 33h8M29 41h8" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>'
+      show_reading_time: true
+      show_word_count: false
+      show_breadcrumbs: true
+      show_toc: true
+      show_share_buttons: true
+      show_rss_in_list: true
+      show_post_nav_links: true
+      posts_prefix: /posts
+      edit_post:
+        url: https://github.com/AccentCMS/Papermood/edit/main/demo/content
+        append_file_path: true
+      home_limit: 5
+      home_info:
+        title: "Hi there \U0001F44B"
+        # The card body comes from content/home/default.md (and its
+        # default.de.md / default.fr.md translations). This plain-text
+        # `content` string is the fallback for a home page without a body.
+        content: >-
+          Welcome to the Papermood demo. This homepage card is the
+          "home info" mode; profile mode and a plain post feed are a config
+          switch away.
+      menu:
+        - name: Posts
+          url: /posts
+        - name: Archives
+          url: /archives
+        - name: Search
+          url: /search
+        - name: Tags
+          url: /tags
+        - name: GitHub
+          url: https://github.com/AccentCMS/accent
+      social:
+        - name: github
+          url: https://github.com/AccentCMS/accent
+        - name: x
+          url: https://x.com/accentcms
+        - name: rss
+          url: /feed.xml
+
+server:
+  address: 127.0.0.1
+  port: 4477
+
+theme:
+  name: Papermood
+  directory: ../..
+
+# Server-side diagram rendering in every mode (the default is hybrid:
+# client pass-through in dev). `server` keeps the demo free of external
+# JavaScript: mermaid and svgbob blocks arrive as inline SVG.
+diagrams:
+  render_mode: server
+
+content:
+  directory: ./content
+
+search:
+  enabled: true
+  exclude:
+    - "/404"
+    - "/tags/*"
+
+feed:
+  enabled: true
+
+dev:
+  hot_reload: true
+  browser_reload: true

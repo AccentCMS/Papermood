@@ -1,0 +1,16 @@
+{#- The card.
+
+    The title link goes through `url()` for the reason the button's link does.
+    The image is a `media` value: a path under the shared media directory goes
+    through `media()`, which adds `/media`, and a page-relative path or a
+    remote URL goes through `url()`, as it always did. On a sub-path install
+    the base-path rewriter adds the deployment prefix to both. The manifest
+    declares `body: markdown`, so the body arrives between blank lines and
+    renders as markdown inside the `<article>`.
+
+    `data-canonical` and `data-part` are the markup contract every conforming
+    theme's card carries.
+-#}
+<article class="card" data-canonical="card">{% if attrs.image %}<img class="card-image" data-part="image" src="{{ media(attrs.image) if attrs.image is startingwith("/") else url(attrs.image) }}" alt="" loading="lazy">{% endif %}{% if attrs.title %}<p class="card-title" data-part="title">{% if attrs.href %}<a href="{{ url(attrs.href) }}">{{ attrs.title }}</a>{% else %}{{ attrs.title }}{% endif %}</p>{% endif %}
+{{ body }}
+</article>

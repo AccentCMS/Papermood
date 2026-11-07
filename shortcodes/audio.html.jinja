@@ -1,0 +1,15 @@
+{#- The audio player. `src` is a `media` value resolved through `media()`
+    with the page's URL, so a page-local file, a shared-library path, and a
+    remote URL all work (components read `page` since the component-context
+    feature). `preload="metadata"` fetches the duration for the controls
+    without downloading the track. A caption wraps the player in a figure,
+    so the theme's figcaption styles apply.
+
+    Video has no theme component on purpose: Accent's builtin `{% video %}`
+    tag covers it, with captions as part of the contract. -#}
+{%- set src = media(attrs.src, page.url) -%}
+{%- if attrs.caption -%}
+<figure class="media-figure"><audio src="{{ src }}" controls preload="metadata"{% if attrs.loop %} loop{% endif %}{% if attrs.muted %} muted{% endif %}></audio><figcaption>{{ attrs.caption }}</figcaption></figure>
+{%- else -%}
+<audio src="{{ src }}" controls preload="metadata"{% if attrs.loop %} loop{% endif %}{% if attrs.muted %} muted{% endif %}></audio>
+{%- endif -%}

@@ -1,0 +1,7 @@
+# Demo build output and Accent's incremental-build manifests.
+demo/public/
+demo/.accent/
+demo/.media-cache/
+demo/.diagram-cache/
+demo/serve.log
+.DS_Store

@@ -1,0 +1,15 @@
+# Site-wide frontmatter defaults for this demo. This project model replaces
+# the theme's `default` model (same name), extends the theme's `post` model
+# (same vocabulary, same validation), and adds inherited default values. A
+# value from `defaults:` applies when the page's frontmatter omits the
+# field; a page that writes the field keeps its own value.
+#
+# The posts of this demo omit `author`. They all show "Jane Doe" -- except
+# /posts/writing-fast-sites, which overrides the default with its own
+# `author: John Smith` line.
+name: Post
+description: The theme post model plus the site-wide frontmatter defaults.
+extends: post
+
+defaults:
+  author: Jane Doe

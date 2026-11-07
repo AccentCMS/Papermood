@@ -1,0 +1,105 @@
+{%- extends "base.html.jinja" -%}
+{%- from "_macros/post.jinja" import entry -%}
+{%- from "_macros/i18n.jinja" import t -%}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- set lang = site.current_language -%}
+
+{% block body_class %}list{% endblock %}
+
+{% block content %}
+{% if pm.profile_mode and pm.profile_mode.enabled %}
+{#- Profile mode: a centered card instead of the post feed. -#}
+<div class="profile">
+    <div class="profile-inner">
+        {% if pm.profile_mode.image %}
+        <img draggable="false" src="{{ media(pm.profile_mode.image) if pm.profile_mode.image is startingwith('/') else url(pm.profile_mode.image) }}"
+            alt="{{ pm.profile_mode.image_alt | default('profile image') }}"
+            height="{{ pm.profile_mode.image_height | default(150) }}" width="{{ pm.profile_mode.image_width | default(150) }}">
+        {% endif %}
+        <h1>{{ pm.profile_mode.title | default(site.name) }}</h1>
+        {% if pm.profile_mode.subtitle %}
+        <span class="profile-subtitle">{{ pm.profile_mode.subtitle }}</span>
+        {% endif %}
+        {% include "partials/social-icons.html.jinja" %}
+        {% if pm.profile_mode.buttons %}
+        <div class="buttons">
+            {% for b in pm.profile_mode.buttons %}
+            <a class="button" href="{{ b.url if '://' in b.url else url(b.url) }}" rel="noopener" title="{{ b.name }}">
+                <span class="button-inner">{{ b.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+
+{#- The post feed. Dated pages, newest first, optionally scoped to one
+    section with `site.extra.papermood.posts_prefix` (e.g. "/posts"). -#}
+{% set posts = all_pages | selectattr("date") | sort(attribute="date", reverse=true) | list %}
+{#- On a site with several languages, keep the rendered language's pages.
+    The default language owns the plain URLs; the others live under
+    /{lang}/, so the match is on that prefix. From Accent 0.29 the entries
+    carry a `language` field (selectattr("language", "equalto", lang) is
+    the cleaner form); the prefix match works on every version. -#}
+{% set lang_root = '' if lang == site.language else '/' ~ lang %}
+{% if site.languages and site.languages | length > 1 %}
+{% if lang_root %}
+{% set posts = posts | selectattr("url", "startingwith", site.base_path ~ lang_root ~ '/') | list %}
+{% else %}
+{% set ns = namespace(posts=posts) %}
+{% for l in site.languages if l != site.language %}
+{% set ns.posts = ns.posts | rejectattr("url", "startingwith", site.base_path ~ '/' ~ l ~ '/') | list %}
+{% endfor %}
+{% set posts = ns.posts %}
+{% endif %}
+{% endif %}
+{% if pm.posts_prefix %}
+{% set posts = posts | selectattr("url", "startingwith", url(lang_root ~ pm.posts_prefix)) | list %}
+{% endif %}
+{#- A page opts out of the home feed with `hidden_in_home_list: true`; it
+    stays in listings, archives, and search. -#}
+{% set posts = posts | rejectattr("custom.hidden_in_home_list") | list %}
+{% set limit = pm.home_limit | default(10) %}
+
+{% if pm.home_info %}
+{#- The card text: the markdown body of the home page when it has one
+    (links work, and a `default.<lang>.md` translates the card), otherwise
+    the plain `home_info.content` string from the config. -#}
+<article class="first-entry home-info">
+    <header class="entry-header">
+        <h1>{{ pm.home_info.title | default(site.name) }}</h1>
+    </header>
+    <div class="entry-content md-content">
+        {% if page.content | trim %}{{ page.content | safe }}{% else %}<p>{{ pm.home_info.content }}</p>{% endif %}
+    </div>
+    <footer class="entry-footer">
+        {% include "partials/social-icons.html.jinja" %}
+    </footer>
+</article>
+{% elif page.content | trim %}
+<div class="post-content md-content">
+    {{ page.content | safe }}
+</div>
+{% endif %}
+
+{% for p in posts %}
+{% if loop.index <= limit %}
+{% if loop.first and not pm.home_info and not pm.disable_special_first_post %}
+{{ entry(p, pm, lang, class="first-entry", heading="h2") }}
+{% else %}
+{{ entry(p, pm, lang) }}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+{% if posts | length > limit %}
+<footer class="page-footer">
+    <nav class="pagination">
+        <a class="next" href="{{ url(pm.all_posts_url | default(pm.posts_prefix | default('/archives'))) }}">{{ t(lang, 'all_posts') }}&nbsp;&raquo;</a>
+    </nav>
+</footer>
+{% endif %}
+
+{% endif %}
+{% endblock %}

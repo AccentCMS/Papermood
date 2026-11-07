@@ -1,0 +1,208 @@
+{#- Papermood base layout: head, header bar, main block, footer.
+
+    Site-wide options come from `site.extra.papermood` in config.yaml; `pm`
+    below is that mapping (empty when unset, so every read falls back). -#}
+{%- from "_macros/i18n.jinja" import t -%}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- set ui_lang = site.current_language -%}
+{%- set default_theme = pm.default_theme | default("auto") -%}
+{%- set home_url = url('/') -%}
+<!DOCTYPE html>
+<html lang="{{ page.language or site.current_language or site.language }}" dir="{{ page.direction or 'ltr' }}" data-theme="{{ default_theme }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% if page.canonical_url == home_url %}{{ site.name }}{% else %}{{ page.title }} | {{ site.name }}{% endif %}{% endblock %}</title>
+    {% include "partials/head_meta.html.jinja" %}
+    {% include "partials/analytics.html.jinja" %}
+    {% for css in theme.assets.css %}
+    <link rel="stylesheet" href="{{ cdn_url('/' ~ (('theme/assets/' ~ css) | fingerprint)) }}">
+    {% endfor %}
+    <link rel="icon" href="{{ url('/theme/assets/favicon.svg') }}" type="image/svg+xml">
+    <meta name="theme-color" content="{{ '#1d1e20' if default_theme == 'dark' else '#ffffff' }}">
+    {% if site.url %}
+    {% set feed_lang_prefix = '/' ~ page.language if page.language and page.language != site.language else '' %}
+    {% for feed in feed_outputs() %}
+    <link rel="alternate" type="{{ feed.mime_type }}" title="{{ site.name }} {{ feed.label }}" href="{{ absolute_url(feed_lang_prefix ~ feed.path) }}">
+    {% endfor %}
+    {% endif %}
+    {{ json_ld() }}
+    <noscript>
+        <style>
+            #theme-toggle,
+            .top-link {
+                display: none;
+            }
+        </style>
+        {% if default_theme == 'auto' %}
+        <style>
+            @media (prefers-color-scheme: dark) {
+                :root[data-theme="auto"] {
+                    --theme: rgb(29, 30, 32);
+                    --entry: rgb(46, 46, 51);
+                    --primary: rgb(218, 218, 219);
+                    --secondary: rgb(155, 156, 157);
+                    --tertiary: rgb(65, 66, 68);
+                    --content: rgb(196, 196, 197);
+                    --code-block-bg: rgb(46, 46, 51);
+                    --code-bg: rgb(55, 56, 62);
+                    --border: rgb(51, 51, 51);
+                    color-scheme: dark;
+                }
+
+                :root[data-theme="auto"] .list {
+                    background: var(--theme);
+                }
+            }
+        </style>
+        {% endif %}
+    </noscript>
+    {# Resolve the stored or system scheme before first paint, so there is
+       no light flash. The site default travels as the data-theme attribute,
+       so this script's text never changes per page (CSP hash stability). #}
+    <script nonce="{{ nonce }}">
+        (function () {
+            var d = document.documentElement;
+            var def = d.dataset.theme || 'auto';
+            var pref = null;
+            try { pref = localStorage.getItem('pref-theme'); } catch (e) { /* private mode */ }
+            if (pref === 'dark' || pref === 'light') {
+                d.dataset.theme = pref;
+            } else if (def === 'auto') {
+                d.dataset.theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+        })();
+    </script>
+    {#- Extension hook: create this file to add your own head tags (meta,
+        analytics, webmentions). An inline <script> in it must carry
+        nonce="{{ nonce }}" to run under the strict script policy. -#}
+    {% include "partials/extend-head.html.jinja" ignore missing %}
+</head>
+
+<body id="top" class="{% block body_class %}{% endblock %}"
+    data-copy-code="{{ 'off' if pm.show_code_copy is defined and not pm.show_code_copy else 'on' }}"
+    data-copy-label="{{ t(ui_lang, 'copy') }}"
+    data-copied-label="{{ t(ui_lang, 'copied') }}"
+    data-backref-label="{{ t(ui_lang, 'back_to_reference') }}">
+    <a href="#main-content" class="skip-link">{{ t(ui_lang, 'skip_to_content') }}</a>
+    <header class="header">
+        <nav class="header-nav" aria-label="{{ t(ui_lang, 'main_nav') }}">
+            <div class="logo">
+                <a href="{{ home_url }}" accesskey="h" title="{{ pm.label | default(site.name) }} (Alt + H)">
+                    {#- The wordmark's icon: an image file, or an inline SVG
+                        string (label_icon_svg). The SVG renders unescaped,
+                        so it is accepted only when it starts with "<svg",
+                        the same guard PaperMod applies. -#}
+                    {%- if pm.label_icon %}<img src="{{ media(pm.label_icon) if pm.label_icon is startingwith('/') else url(pm.label_icon) }}" alt="" height="{{ pm.label_icon_height | default(30) }}">
+                    {%- elif pm.label_icon_svg and pm.label_icon_svg is startingwith('<svg') %}{{ pm.label_icon_svg | safe }}{% endif -%}
+                    {{ pm.label | default(site.name) }}
+                </a>
+                <div class="logo-switches">
+                    {% if pm.show_theme_toggle is not defined or pm.show_theme_toggle %}
+                    <button id="theme-toggle" class="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="{{ t(ui_lang, 'toggle_theme') }}">
+                        <svg class="moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                    {% endif %}
+                    {% if page.translations | length > 1 %}
+                    <span class="nav-sep" aria-hidden="true">|</span>
+                    <ul class="lang-menu" aria-label="Language">
+                        {#- site.languages carries the configured display
+                            order; translations follow it. -#}
+                        {% for code in site.languages %}
+                        {% for t in page.translations if t.language == code %}
+                        {% if t.active %}
+                        <li><span class="lang-active" lang="{{ t.language }}" aria-current="true">{{ t.language | upper }}</span></li>
+                        {% else %}
+                        <li><a href="{{ t.url }}" lang="{{ t.language }}" hreflang="{{ t.language }}" aria-label="{{ t.language }}">{{ t.language | upper }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+            <ul id="menu" class="menu">
+                {% if pm.menu %}
+                {% for item in pm.menu %}
+                {% set item_url = item.url if '://' in item.url else url(item.url) %}
+                {% set is_search = item_url == url('/search') %}
+                <li>
+                    <a href="{{ item_url }}" title="{{ item.name }}{{ ' (Alt + /)' if is_search else '' }}"{% if is_search %} accesskey="/"{% endif %}>
+                        <span{% if page.url == item_url %} class="active"{% endif %}>{{ item.name }}</span>
+                        {%- if '://' in item.url %}
+                        <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12" aria-hidden="true">
+                            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                            <path d="M15 3h6v6"></path>
+                            <path d="M10 14L21 3"></path>
+                        </svg>
+                        {%- endif %}
+                    </a>
+                </li>
+                {% endfor %}
+                {% else %}
+                {% set nav_depth = home_url | split("/") | list | length %}
+                {% for p in pages %}
+                {% set p_parts = p.url | split("/") | list %}
+                {% if p_parts | length <= nav_depth and p.url != home_url %}
+                {% set is_search = p.url == url('/search') %}
+                <li><a href="{{ p.url }}" title="{{ p.nav_title or p.title }}{{ ' (Alt + /)' if is_search else '' }}"{% if is_search %} accesskey="/"{% endif %}><span{% if page.url == p.url or (page.url is startingwith(p.url ~ '/')) %} class="active"{% endif %}>{{ p.nav_title or p.title }}</span></a></li>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main class="main" id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">
+        {% if pm.copyright %}
+        <span>{{ pm.copyright }}</span>
+        {% else %}
+        <span>&copy; {{ now().year }} <a href="{{ home_url }}">{{ site.name }}</a></span>
+        {% endif %}
+        <span> &middot; </span>
+        <span>Powered by
+            <a href="https://accentcms.dev" rel="noopener" target="_blank">Accent CMS</a> &amp;
+            <a href=" https://github.com/AccentCMS/Papermood.git" rel="noopener" target="_blank">Papermood</a></span>
+    </footer>
+    {% if pm.show_scroll_to_top is not defined or pm.show_scroll_to_top %}
+    <a href="#top" id="top-link" class="top-link hidden" aria-label="{{ t(ui_lang, 'go_to_top') }}" title="{{ t(ui_lang, 'go_to_top') }} (Alt + G)" accesskey="g">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="17 11 12 6 7 11"></polyline>
+            <polyline points="17 18 12 13 7 18"></polyline>
+        </svg>
+    </a>
+    {% endif %}
+    {#- Extension hook: create this file for end-of-body markup or
+        scripts (nonce rule as in extend-head). -#}
+    {% include "partials/extend-footer.html.jinja" ignore missing %}
+    {% for js in theme.assets.js %}
+    <script nonce="{{ nonce }}" src="{{ url('/' ~ (('theme/assets/' ~ js) | fingerprint)) }}" defer></script>
+    {% endfor %}
+    {% if page.islands is defined and page.islands | length > 0 %}
+    {% for island in page.islands %}
+    {% if island.source == "plugin" %}
+    <script nonce="{{ nonce }}" src="{{ url('/assets/plugins/' ~ island.plugin ~ '/' ~ island.js_path) }}" defer></script>
+    {% else %}
+    <script nonce="{{ nonce }}" src="{{ url('/' ~ (('theme/assets/js/islands/' ~ island.component ~ '.js') | fingerprint)) }}" defer></script>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+</body>
+
+</html>

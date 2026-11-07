@@ -1,0 +1,10 @@
+# The search page model. It binds to `template: search`.
+name: Search Page
+description: The client-side search page.
+extends: base
+
+fields:
+  placeholder:
+    type: string
+    label: Search input placeholder
+    description: Replaces the translated default placeholder.

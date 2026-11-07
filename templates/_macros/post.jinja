@@ -1,0 +1,55 @@
+{#- Shared building blocks for listings and single posts.
+
+    `pm` is the `site.extra.papermood` mapping, `lang` the page's language;
+    both are passed in because imported macros do not see the caller's
+    context. -#}
+
+{%- from "_macros/i18n.jinja" import t -%}
+
+{%- macro meta_line(p, pm, lang, full=false) -%}
+    {%- set parts = [] -%}
+    {%- if p.date -%}
+        {%- set parts = parts + ['<time datetime="' ~ p.date ~ '">' ~ (p.date | date(pm.date_format | default("long"), locale=lang)) ~ '</time>'] -%}
+    {%- endif -%}
+    {%- if full and (pm.show_reading_time is not defined or pm.show_reading_time) and p.reading_time -%}
+        {%- set parts = parts + ['<span>' ~ p.reading_time ~ (' ' ~ t(lang, 'min')) ~ '</span>'] -%}
+    {%- endif -%}
+    {%- if full and pm.show_word_count and p.word_count -%}
+        {%- set parts = parts + ['<span>' ~ p.word_count ~ (' ' ~ t(lang, 'words')) ~ '</span>'] -%}
+    {%- endif -%}
+    {%- if (pm.show_author is not defined or pm.show_author) and p.author -%}
+        {%- set parts = parts + ['<span>' ~ p.author ~ '</span>'] -%}
+    {%- endif -%}
+    {{- parts | join('&nbsp;&middot;&nbsp;') | safe -}}
+{%- endmacro -%}
+
+{%- macro entry(p, pm, lang, class="post-entry", heading="h2") -%}
+<article class="{{ class }}">
+    {%- set cover = p.custom.cover %}
+    {%- if cover and not pm.hide_list_covers and not p.custom.cover_hidden and not p.custom.cover_hidden_in_list %}
+    <figure class="entry-cover">
+        {#- Raster covers get a srcset through the media pipeline; vector and
+            remote covers are served as written. -#}
+        {%- set ext = cover | split('.') | last | lower %}
+        {%- if (pm.cover_responsive is not defined or pm.cover_responsive) and '://' not in cover and ext in ['jpg', 'jpeg', 'png', 'webp', 'tif', 'bmp'] %}
+        {{ responsive_image(media(cover, p.url), p.custom.cover_alt | default(''), '(max-width: 768px) 100vw, 720px') }}
+        {%- else %}
+        <img loading="lazy" src="{{ media(cover, p.url) }}" alt="{{ p.custom.cover_alt | default('') }}">
+        {%- endif %}
+    </figure>
+    {%- endif %}
+    <header class="entry-header">
+        <{{ heading }} class="entry-hint-parent">{{ p.title }}</{{ heading }}>
+    </header>
+    {%- set summary = p.custom.summary | default(p.lead) %}
+    {%- if summary and not pm.hide_summary %}
+    <div class="entry-content">
+        <p>{{ summary | truncate(200) }}</p>
+    </div>
+    {%- endif %}
+    <footer class="entry-footer">
+        {{ meta_line(p, pm, lang) }}
+    </footer>
+    <a class="entry-link" aria-label="{{ p.title }}" href="{{ p.url }}"></a>
+</article>
+{%- endmacro -%}

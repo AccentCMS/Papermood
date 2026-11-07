@@ -1,0 +1,6 @@
+# The section list model. It binds to `template: list`. The items and the
+# pagination come from the core `content:` collection, which Accent
+# validates itself.
+name: Section List
+description: A section list page. It adds no fields to the base model.
+extends: base

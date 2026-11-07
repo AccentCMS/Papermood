@@ -1,0 +1,123 @@
+{%- extends "base.html.jinja" -%}
+{%- from "_macros/post.jinja" import meta_line -%}
+{%- from "_macros/i18n.jinja" import t -%}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- set lang = site.current_language -%}
+
+{% block content %}
+<article class="post-single">
+    <header class="post-header">
+        {% include "partials/breadcrumbs.html.jinja" %}
+        <h1 class="post-title entry-hint-parent">
+            {{ page.title }}
+            {%- if page.status == 'draft' %}
+            <span class="entry-hint" title="{{ t(lang, 'draft') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor" aria-label="Draft">
+                    <path d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+                </svg>
+            </span>
+            {%- endif %}
+        </h1>
+        {% if page.lead %}
+        <div class="post-description">{{ page.lead }}</div>
+        {% endif %}
+        {% if not page.custom.hide_meta %}
+        <div class="post-meta">
+            {%- set meta = meta_line(page, pm, lang, full=true) -%}
+            {{ meta }}
+            {#- Edit link: pm.edit_post.url (+ append_file_path appends
+                "<page url>/default.md" for GitHub-style content links), or a
+                per-page edit_url verbatim. -#}
+            {%- set edit_href = '' -%}
+            {%- if not page.custom.edit_post_disabled -%}
+                {%- if page.custom.edit_url -%}
+                    {%- set edit_href = page.custom.edit_url -%}
+                {%- elif pm.edit_post and pm.edit_post.url -%}
+                    {%- set edit_href = pm.edit_post.url ~ ((page.url ~ '/default.md') if pm.edit_post.append_file_path else '') -%}
+                {%- endif -%}
+            {%- endif -%}
+            {%- if edit_href %}
+            {%- if meta | trim %}&nbsp;|&nbsp;{% endif -%}
+            <span><a href="{{ edit_href }}" rel="noopener noreferrer edit" target="_blank">{{ pm.edit_post.text | default(t(lang, 'suggest_changes')) }}</a></span>
+            {%- endif %}
+            {#- Visible "Originally published at" line for a syndicated post.
+                Display only: the head's canonical tag stays the engine's. -#}
+            {%- set canonical = page.custom.canonical_url -%}
+            {%- if canonical and (pm.show_canonical_link or page.custom.show_canonical_link) %}
+            {%- set canonical_host = (canonical | split('/'))[2] if '://' in canonical else canonical -%}
+            {%- if (meta | trim) or edit_href %}&nbsp;|&nbsp;{% endif -%}
+            <span>{{ pm.canonical_link_text | default(t(lang, 'originally_published')) }}&nbsp;<a href="{{ canonical }}" title="{{ canonical }}" target="_blank" rel="noopener noreferrer">{{ canonical_host }}</a></span>
+            {%- endif %}
+        </div>
+        {% endif %}
+    </header>
+    {% if page.custom.cover and not page.custom.cover_hidden and not page.custom.cover_hidden_in_single %}
+    <figure class="entry-cover">
+        {#- The single-post cover stays a plain eager <img>: it is the likely
+            largest-contentful paint, which lazy loading would delay, and
+            responsive_image() always emits loading="lazy". -#}
+        <img loading="eager" src="{{ media(page.custom.cover, page.url) }}" alt="{{ page.custom.cover_alt | default(page.custom.cover_caption) | default('') }}">
+        {% if page.custom.cover_caption %}
+        <figcaption>{{ page.custom.cover_caption }}</figcaption>
+        {% endif %}
+    </figure>
+    {% endif %}
+    {% include "partials/toc.html.jinja" %}
+
+    <div class="post-content md-content">
+        {{ page.content | safe }}
+    </div>
+
+    {#- Extension hook: rendered after the post body, before the
+        footer -- related-posts widgets, newsletter boxes, and the like. -#}
+    {% include "partials/extend-post-content.html.jinja" ignore missing %}
+
+    <footer class="post-footer">
+        {% if page.tags %}
+        <ul class="post-tags">
+            {% for tag in page.tags %}
+            <li><a href="{{ tag_url(tag) }}">{{ tag }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {#- "What links here": pages that reference this one via [[wiki
+            links]]. Opt-in (show_backlinks), since not every blog wants a
+            crosslink graph on its posts. -#}
+        {% if pm.show_backlinks and page.backlinks | length > 0 %}
+        <nav class="post-backlinks" aria-label="{{ t(lang, 'pages_linking_here') }}">
+            <span class="backlinks-title">{{ t(lang, 'pages_linking_here') }}</span>
+            <ul>
+                {% for link in page.backlinks %}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% if (pm.show_post_nav_links is not defined or pm.show_post_nav_links) and (page.prev or page.next) %}
+        <nav class="paginav" aria-label="{{ t(lang, 'more_posts') }}">
+            {% if page.prev %}
+            <a class="prev" href="{{ page.prev.url }}">
+                <span class="title">&laquo; {{ t(lang, 'prev') }}</span>
+                <span>{{ page.prev.title }}</span>
+            </a>
+            {% endif %}
+            {% if page.next %}
+            <a class="next" href="{{ page.next.url }}">
+                <span class="title">{{ t(lang, 'next') }} &raquo;</span>
+                <span>{{ page.next.title }}</span>
+            </a>
+            {% endif %}
+        </nav>
+        {% endif %}
+        {% if pm.show_share_buttons and not page.custom.disable_share %}
+        {% include "partials/share-buttons.html.jinja" %}
+        {% endif %}
+    </footer>
+
+    {#- Extension hook: create this file to mount a comments widget
+        (giscus, utterances, isso, ...). A third-party embed's origin may
+        also need an entry in http_headers.security.script_policy.sources;
+        gate it on page.custom.comments if you want per-page control. -#}
+    {% include "partials/comments.html.jinja" ignore missing %}
+</article>
+{% endblock %}

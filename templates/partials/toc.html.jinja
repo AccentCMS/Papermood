@@ -1,0 +1,25 @@
+{#- Collapsible table of contents, PaperMod style. Shown when the theme
+    (`site.extra.papermood.show_toc`) or the page (`toc:` frontmatter) asks
+    for it and the page has headings. -#}
+{%- from "_macros/i18n.jinja" import t -%}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- set show = page.custom.toc if page.custom.toc is defined else pm.show_toc -%}
+{%- set open = page.custom.toc_open if page.custom.toc_open is defined else pm.toc_open -%}
+{%- if show and page.toc -%}
+<details class="toc"{% if open %} open{% endif %}>
+    <summary accesskey="c" title="(Alt + C)">
+        <span class="title">{{ t(site.current_language, 'toc') }}</span>
+    </summary>
+    <div class="inner">
+        <ul>
+            {% for entry in page.toc recursive %}
+            <li><a href="#{{ entry.id }}">{{ entry.text }}</a>
+                {%- if entry.children %}
+                <ul>{{ loop(entry.children) }}</ul>
+                {%- endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</details>
+{%- endif -%}

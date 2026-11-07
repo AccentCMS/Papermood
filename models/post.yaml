@@ -1,0 +1,83 @@
+# The post vocabulary. It declares the full Papermood frontmatter: the
+# cover, the visibility flags, the edit link, the canonical link, and the
+# per-page display switches. A typo such as `cover_hiden` or a non-boolean
+# `toc` value fails at load time. No field is required: a page with only a
+# title validates.
+#
+# Pages bind to the `default` model (by template name), which extends this
+# one. The split exists so a site can replace `default` with its own model
+# and keep the vocabulary: a project `models/default.yaml` with
+# `extends: post` plus a `defaults:` map gives every post inherited
+# frontmatter defaults. The demo does this; see README.md, section
+# "Frontmatter defaults".
+name: Post
+description: >
+  A post or a plain page. It declares the cover, the visibility flags, the
+  edit link, the canonical link, and the per-page display switches.
+extends: base
+
+fields:
+  cover:
+    type: media
+    label: Cover image
+    description: A page-local file, a shared media path, or a remote URL.
+  cover_alt:
+    type: string
+    label: Cover alt text
+  cover_caption:
+    type: string
+    label: Cover caption
+  cover_hidden:
+    type: boolean
+    label: Hide the cover on all pages
+  cover_hidden_in_list:
+    type: boolean
+    label: Hide the cover on cards only
+  cover_hidden_in_single:
+    type: boolean
+    label: Hide the cover on the post only
+
+  hidden_in_home_list:
+    type: boolean
+    label: Keep the post out of the home feed
+
+  edit_url:
+    type: url
+    label: Per-page edit link
+    description: Used as written. It replaces the edit_post link of the theme options.
+  edit_post_disabled:
+    type: boolean
+    label: No edit link on this post
+
+  canonical_url:
+    type: url
+    label: Canonical source URL
+  show_canonical_link:
+    type: boolean
+    label: Show the "Originally published at" line
+
+  toc:
+    type: boolean
+    label: Per-page table of contents
+  toc_open:
+    type: boolean
+    label: Open the table of contents
+  breadcrumbs:
+    type: boolean
+    label: Per-page breadcrumbs
+  hide_meta:
+    type: boolean
+    label: Hide the date and read-time line
+  disable_share:
+    type: boolean
+    label: Hide the share buttons on this post
+
+  summary:
+    type: text
+    label: Card summary
+    description: Replaces the lead on cards.
+
+  comments:
+    type: boolean
+    label: Comments switch
+    description: Read by the comments extension hook. Set false to hide comments on this post.

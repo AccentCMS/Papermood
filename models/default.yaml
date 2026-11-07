@@ -1,0 +1,14 @@
+# The model of the `default` template. It binds by template name, so each
+# page with `template: default` -- and each `default.md` without a template
+# key -- validates against it. The vocabulary lives in `post.yaml`; this
+# file only names it.
+#
+# The indirection is the extension point for sites: a project
+# `models/default.yaml` replaces this file. Write `extends: post` in it and
+# add a `defaults:` map, and every post inherits those frontmatter values.
+# The demo does this; see README.md, section "Frontmatter defaults".
+name: Post
+description: >
+  A post or a plain page, bound by the `default` template name. The fields
+  come from the `post` model.
+extends: post

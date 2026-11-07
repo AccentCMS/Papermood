@@ -1,0 +1,28 @@
+# Papermood - an Accent CMS theme inspired by hugo-PaperMod.
+#
+# A fast, clean blog theme: card-style post entries, dark/light mode with a
+# toggle, archives, tag pages, client-side search, table of contents, cover
+# images, and the full canonical component set.
+#
+# Site-wide options live under `site.extra.papermood` in config.yaml; see
+# README.md for the full list.
+name: Papermood
+description: A fast, clean blog theme in the spirit of PaperMod - cards, dark mode, archives, search.
+version: "1.0.0"
+author: Accent CMS
+license: MIT
+
+assets:
+  css:
+    - css/papermood.css
+  js:
+    - js/papermood.js
+    - js/tabs.js
+
+styling:
+  sass:
+    enabled: false
+  utilities:
+    enabled: false
+  processing:
+    minify: true

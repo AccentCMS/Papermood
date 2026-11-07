@@ -1,0 +1,6 @@
+# The home page model. It binds to `template: home`. The feed, the intro
+# card, and profile mode come from site.extra.papermood, so the page itself
+# carries only the base metadata.
+name: Home Page
+description: The home page. It adds no fields to the base model.
+extends: base

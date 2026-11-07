@@ -1,0 +1,53 @@
+# The shared base model. All Papermood models extend it. It validates the
+# social / SEO metadata that partials/head_meta.html.jinja renders. The
+# model is not strict: keys that are not declared here pass through, so a
+# platform tag that this file does not list still works.
+name: Base Page
+description: >
+  Shared base model for all Papermood page types. It validates the meta
+  description and the social tags. Pages that omit them validate cleanly.
+
+fields:
+  # The page-specific meta description. The render falls back from
+  # frontmatter description to lead to site.description. The cap keeps
+  # platforms from a silent truncation of the unfurl text.
+  description:
+    type: string
+    label: Meta description
+    description: Page-specific description for the social card and the search snippet.
+    constraints:
+      max_length: 200
+
+  # The open social / SEO tag bag. Only the keys below are validated. Other
+  # keys ride through as undeclared keys with no schema change.
+  meta:
+    type: object
+    label: Social / SEO tags
+    description: Open Graph, Twitter Card, and other platform meta tags.
+    fields:
+      og:type:
+        type: enum
+        values: [website, article, profile]
+        default: website
+        label: Open Graph type
+      og:title:
+        type: string
+        label: Open Graph title
+        constraints:
+          max_length: 70
+      og:description:
+        type: string
+        label: Open Graph description
+        constraints:
+          max_length: 200
+      twitter:card:
+        type: enum
+        values: [summary, summary_large_image]
+        default: summary
+        label: Twitter card type
+      twitter:site:
+        type: string
+        label: Twitter site handle
+      twitter:creator:
+        type: string
+        label: Twitter creator handle

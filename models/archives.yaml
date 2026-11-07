@@ -1,0 +1,5 @@
+# The archives model. It binds to `template: archives`. The year and month
+# groups come from the dated pages of the site.
+name: Archives
+description: The archives page. It adds no fields to the base model.
+extends: base

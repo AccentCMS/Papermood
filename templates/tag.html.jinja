@@ -1,0 +1,21 @@
+{%- extends "base.html.jinja" -%}
+{%- from "_macros/post.jinja" import entry -%}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- set lang = site.current_language -%}
+
+{% block title %}{{ taxonomy.current_label | default(page.title) }} | {{ site.name }}{% endblock %}
+
+{% block body_class %}list{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <h1>{{ taxonomy.current_label | default(page.title) }}</h1>
+</header>
+
+{#- Dated pages newest first, then any undated ones, so a missing date can
+    never break the sort. -#}
+{% set dated = taxonomy.pages | selectattr("date") | sort(attribute="date", reverse=true) | list %}
+{% for p in dated + (taxonomy.pages | rejectattr("date") | list) %}
+{{ entry(p, pm, lang, class="post-entry tag-entry") }}
+{% endfor %}
+{% endblock %}

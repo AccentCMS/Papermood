@@ -1,0 +1,72 @@
+{%- extends "base.html.jinja" -%}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- set lang = site.current_language -%}
+
+{% block body_class %}list{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <h1>{{ page.title }}</h1>
+    {% if page.lead %}
+    <div class="post-description">{{ page.lead }}</div>
+    {% endif %}
+</header>
+
+{#- Every dated page, newest first, grouped by year and month. Dates are
+    normalized YYYY-MM-DD in listings, so the year is a prefix match. -#}
+{% set posts = all_pages | selectattr("date") | sort(attribute="date", reverse=true) | list %}
+{#- Keep the rendered language's pages, as the home feed does: the default
+    language owns the plain URLs, the others live under /{lang}/. -#}
+{% set lang_root = '' if lang == site.language else '/' ~ lang %}
+{% if site.languages and site.languages | length > 1 %}
+{% if lang_root %}
+{% set posts = posts | selectattr("url", "startingwith", site.base_path ~ lang_root ~ '/') | list %}
+{% else %}
+{% set ns = namespace(posts=posts) %}
+{% for l in site.languages if l != site.language %}
+{% set ns.posts = ns.posts | rejectattr("url", "startingwith", site.base_path ~ '/' ~ l ~ '/') | list %}
+{% endfor %}
+{% set posts = ns.posts %}
+{% endif %}
+{% endif %}
+{% if pm.posts_prefix and not pm.show_all_pages_in_archive %}
+{% set posts = posts | selectattr("url", "startingwith", url(lang_root ~ pm.posts_prefix)) | list %}
+{% endif %}
+
+{% for p in posts %}
+{% set year = p.date | date("%Y") %}
+{% if loop.first or (posts[loop.index0 - 1].date | date("%Y")) != year %}
+{% set year_posts = posts | selectattr("date", "startingwith", year) | list %}
+<div class="archive-year">
+    <h2 class="archive-year-header" id="y-{{ year }}">
+        <a class="archive-header-link" href="#y-{{ year }}">{{ year }}</a>
+        <sup class="archive-count">&nbsp;{{ year_posts | length }}</sup>
+    </h2>
+    {% for mp in year_posts %}
+    {% set month = mp.date | date("%Y-%m") %}
+    {% if loop.first or (year_posts[loop.index0 - 1].date | date("%Y-%m")) != month %}
+    {% set month_posts = year_posts | selectattr("date", "startingwith", month) | list %}
+    <div class="archive-month">
+        <h3 class="archive-month-header" id="m-{{ month }}">
+            <a class="archive-header-link" href="#m-{{ month }}">{{ mp.date | date("%B", locale=lang) }}</a>
+            <sup class="archive-count">&nbsp;{{ month_posts | length }}</sup>
+        </h3>
+        <div class="archive-posts">
+            {% for ap in month_posts %}
+            <div class="archive-entry">
+                <h4 class="archive-entry-title entry-hint-parent">{{ ap.title }}</h4>
+                <div class="archive-meta">
+                    <time datetime="{{ ap.date }}">{{ ap.date | date(pm.date_format | default("long"), locale=lang) }}</time>
+                    {%- if ap.author %}&nbsp;&middot;&nbsp;<span>{{ ap.author }}</span>{% endif %}
+                </div>
+                <a class="entry-link" aria-label="{{ ap.title }}" href="{{ ap.url }}"></a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}

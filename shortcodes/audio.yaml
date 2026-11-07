@@ -1,0 +1,23 @@
+# Component manifest for the audio player, a Papermood extra in the spirit
+# of PaperMod's `audio` shortcode. Written self-closing:
+# `{% audio src="episode.mp3" /%}`.
+name: audio
+description: An audio player with native controls and an optional caption.
+params:
+  - name: src
+    type: media
+    required: true
+    description: The audio file. Page-local, under the shared media library, or a remote URL.
+  - name: caption
+    type: string
+    required: false
+    description: Visible text shown under the player.
+  - name: loop
+    type: boolean
+    required: false
+    description: Start over when playback ends.
+  - name: muted
+    type: boolean
+    required: false
+    description: Start muted.
+body: none

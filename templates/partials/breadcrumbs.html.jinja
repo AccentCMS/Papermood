@@ -1,0 +1,30 @@
+{#- Breadcrumb trail, PaperMod style: crumbs separated by chevrons, with a
+    trailing chevron before the page itself. Shown when
+    `site.extra.papermood.show_breadcrumbs` or the page's `breadcrumbs`
+    frontmatter asks for it. -#}
+{%- from "_macros/i18n.jinja" import t -%}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- set show = page.custom.breadcrumbs if page.custom.breadcrumbs is defined else pm.show_breadcrumbs -%}
+{%- set home_url = url('/') -%}
+{%- if show and page.breadcrumbs -%}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+    {#- The trail starts at home even when the hierarchy's root page is not
+        an ancestor of this one. -#}
+    {%- set home_label = t(site.current_language, 'home') -%}
+    {%- set first_is_home = page.breadcrumbs[0].url == home_url -%}
+    {%- if not first_is_home %}
+    <a href="{{ home_url }}">{{ home_label }}</a>
+    {%- endif %}
+    {%- for crumb in page.breadcrumbs %}
+    {%- if not loop.first or not first_is_home %}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+    {%- endif %}
+    <a href="{{ crumb.url }}">{{ home_label if crumb.url == home_url else (crumb.nav_title or crumb.title) }}</a>
+    {%- endfor %}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+</nav>
+{%- endif -%}

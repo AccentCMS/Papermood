@@ -1,0 +1,37 @@
+{#- Site-verification meta tags and Google Analytics, PaperMod style.
+
+    Verification tags are harmless metadata and render in every mode. The
+    gtag script renders only when the site runs or builds in production
+    (`accent serve --production`, or a build with `site.production`), so dev
+    traffic is never counted -- the same split PaperMod makes with its
+    production check.
+
+    Note for the strict script policy: gtag.js loads further scripts from
+    Google's origins, so a site using it adds those origins to
+    `http_headers.security.script_policy.sources` (see the theme README). -#}
+{%- set pm = site.extra.papermood | default({}) -%}
+{%- if pm.verification %}
+{%- if pm.verification.google %}
+<meta name="google-site-verification" content="{{ pm.verification.google }}">
+{%- endif %}
+{%- if pm.verification.yandex %}
+<meta name="yandex-verification" content="{{ pm.verification.yandex }}">
+{%- endif %}
+{%- if pm.verification.bing %}
+<meta name="msvalidate.01" content="{{ pm.verification.bing }}">
+{%- endif %}
+{%- if pm.verification.naver %}
+<meta name="naver-site-verification" content="{{ pm.verification.naver }}">
+{%- endif %}
+{%- endif %}
+{%- if pm.analytics and pm.analytics.google and site.production %}
+<script nonce="{{ nonce }}" async src="https://www.googletagmanager.com/gtag/js?id={{ pm.analytics.google }}"></script>
+{#- The measurement ID is a site-wide constant, so this inline script's text
+    is identical on every page and hashes to one CSP entry (f382). -#}
+<script nonce="{{ nonce }}">
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', document.currentScript.previousElementSibling.src.split('=')[1]);
+</script>
+{%- endif %}
