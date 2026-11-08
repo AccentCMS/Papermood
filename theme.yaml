@@ -8,20 +8,22 @@
 # README.md for the full list.
 name: Papermood
 description: A fast, clean blog theme in the spirit of PaperMod - cards, dark mode, archives, search.
-version: "1.0.0"
+version: "1.1.0"
 author: Accent CMS
 license: MIT
 
 assets:
   css:
-    - css/papermood.css
+    - css/papermood.scss
   js:
     - js/papermood.js
     - js/tabs.js
 
 styling:
   sass:
-    enabled: false
+    enabled: true
+    load_paths:
+      - css
   utilities:
     enabled: false
   processing:

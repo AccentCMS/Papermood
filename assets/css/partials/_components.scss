@@ -1,0 +1,177 @@
+// Shortcode components: callout, accordion, card, button, tag, tabs, media.
+
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Callout: PaperMod has no own callout; this follows its card language.
+.callout {
+    margin: var(--content-gap) 0;
+    padding: 12px var(--gap);
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-inline-start: 0.3rem solid var(--secondary);
+    border-radius: var(--radius);
+    font-size: 16px;
+
+    @include dark {
+        background: var(--entry);
+    }
+}
+
+.callout-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+details.callout > .callout-title {
+    margin-bottom: 0;
+}
+
+.callout-info {
+    border-inline-start-color: $callout-info;
+}
+
+.callout-success {
+    border-inline-start-color: $callout-success;
+}
+
+.callout-warning {
+    border-inline-start-color: $callout-warning;
+}
+
+.callout-danger {
+    border-inline-start-color: $callout-danger;
+}
+
+.accordion {
+    margin: var(--content-gap) 0;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 16px;
+    padding: 0.3rem 1.2rem;
+
+    @include dark {
+        background: var(--entry);
+    }
+
+    > summary {
+        font-weight: 500;
+    }
+
+    &[open] > summary {
+        margin-bottom: 8px;
+    }
+}
+
+.card {
+    margin: var(--content-gap) 0;
+    padding: var(--gap);
+    background: var(--entry);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.list .card {
+    background: var(--entry);
+}
+
+.card-image {
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--primary);
+    color: var(--theme) !important;
+    border-radius: calc(36px / 2);
+    font-size: 15px;
+    text-decoration: none !important;
+}
+
+.btn-secondary {
+    background: var(--tertiary);
+    color: var(--primary) !important;
+}
+
+.tag {
+    display: inline-block;
+    padding: 0 10px;
+    color: var(--secondary);
+    font-size: 0.8em;
+    line-height: 1.8;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none !important;
+
+    @include dark {
+        background: var(--entry);
+    }
+}
+
+.tabs {
+    margin: var(--content-gap) 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    background: var(--code-bg);
+    border-bottom: 1px solid var(--border);
+
+    @include dark {
+        background: var(--entry);
+    }
+}
+
+.tabs-tab {
+    padding: 8px 16px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--secondary);
+    border-bottom: 2px solid transparent;
+
+    &.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+}
+
+.tabs-panel {
+    display: none;
+    padding: 12px var(--gap);
+    font-size: 16px;
+
+    &.active {
+        display: block;
+    }
+}
+
+.media-figure audio,
+.media-figure video {
+    margin-bottom: 0;
+}
+
+.video-embed {
+    margin: var(--content-gap) 0;
+
+    iframe {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        height: auto;
+        border: 0;
+        border-radius: var(--radius);
+    }
+}

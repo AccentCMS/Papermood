@@ -1,0 +1,77 @@
+// Diagrams (Accent server-side text-to-diagram).
+//
+// Accent renders fenced mermaid / svgbob blocks and the {% diagram %} tag
+// to inline SVG on the server. The pipeline emits `.diagram-wrapper` (a
+// <figure> when a caption or alt text is set, otherwise a <div>) and, on a
+// render error with `on_error: warn`, a self-contained `.diagram-warning`
+// SVG themed via the `--diagram-warning-*` variables below.
+
+@use 'variables' as *;
+
+.md-content {
+    @each $key, $value in $diagram-warning-light {
+        --diagram-warning-#{$key}: #{$value};
+    }
+}
+
+[data-theme="dark"] .md-content {
+    @each $key, $value in $diagram-warning-dark {
+        --diagram-warning-#{$key}: #{$value};
+    }
+}
+
+.md-content {
+    .diagram-wrapper {
+        display: block;
+        margin: 24px 0;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    // In production builds a fenced block's SVG arrives bare (the wrapper
+    // div is dev-only): mermaid output carries data-diagram-type, svgbob
+    // output carries class="svgbob".
+    .diagram-wrapper > svg,
+    svg[data-diagram-type],
+    svg.svgbob {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+    }
+
+    > svg[data-diagram-type],
+    > svg.svgbob {
+        margin: 24px auto;
+    }
+
+    figure.diagram-wrapper {
+        text-align: center;
+    }
+
+    .diagram-caption {
+        margin-top: 8px;
+        font-size: 14px;
+        font-style: italic;
+        color: var(--secondary);
+    }
+}
+
+// The rendered SVGs keep their own light palette, so a light panel keeps
+// lines and labels readable on the dark theme.
+[data-theme="dark"] .md-content {
+    .diagram-wrapper,
+    > svg[data-diagram-type],
+    > svg.svgbob {
+        background: $diagram-dark-panel-bg;
+        padding: 12px;
+        border-radius: 8px;
+    }
+}
+
+.md-content .diagram-warning {
+    display: block;
+    margin: 16px 0;
+    max-width: 100%;
+    height: auto;
+}

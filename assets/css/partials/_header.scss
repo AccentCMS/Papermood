@@ -1,0 +1,120 @@
+// Site header: logo, theme toggle, language switch, menu.
+
+.header-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: calc(var(--nav-width) + var(--gap) * 2);
+    margin: auto;
+    line-height: var(--header-height);
+    padding: 0 var(--gap);
+    column-gap: var(--gap);
+
+    a {
+        display: block;
+    }
+}
+
+.logo,
+.menu {
+    display: flex;
+}
+
+.logo {
+    align-items: center;
+    column-gap: 0.55rem;
+    flex-wrap: wrap;
+
+    a {
+        font-size: 24px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        column-gap: 0.55rem;
+
+        img,
+        svg {
+            pointer-events: none;
+            border-radius: 6px;
+        }
+    }
+}
+
+.theme-toggle {
+    padding: 0 0.4rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+[data-theme="dark"] .moon {
+    display: none;
+}
+
+:root:not([data-theme="dark"]) .sun {
+    display: none;
+}
+
+.logo-switches {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: inherit;
+    min-height: stretch;
+    flex-wrap: inherit;
+
+    > * {
+        min-height: inherit;
+        align-items: center;
+        display: inline-flex;
+    }
+}
+
+.nav-sep {
+    color: var(--secondary);
+}
+
+.lang-menu {
+    list-style: none;
+    display: inline-flex;
+    min-height: inherit;
+    align-items: inherit;
+
+    a,
+    .lang-active {
+        font-size: 1rem;
+        font-weight: 500;
+        padding: 0 0.4rem;
+        display: inline-flex;
+    }
+
+    a {
+        color: var(--secondary);
+    }
+
+    .lang-active {
+        color: var(--primary);
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+}
+
+.menu {
+    list-style: none;
+    word-break: keep-all;
+    overflow-x: auto;
+    white-space: nowrap;
+    column-gap: var(--gap);
+
+    a {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        column-gap: 4px;
+    }
+
+    .active {
+        font-weight: 500;
+        text-decoration: underline;
+        text-underline-offset: 0.3rem;
+        text-decoration-thickness: 2px;
+    }
+}

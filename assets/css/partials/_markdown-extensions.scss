@@ -1,0 +1,152 @@
+// Markdown extensions: admonitions, wiki links, task lists, footnotes,
+// definition lists, and the backlinks block.
+
+@use 'variables' as *;
+
+// Admonitions: > [!NOTE] blockquote alerts. Emitted as
+// .admonition.admonition-<type> with a .admonition-title line.
+.md-content {
+    .admonition {
+        margin: 24px 0;
+        padding: 12px 20px;
+        border-inline-start: 4px solid var(--admonition-color, var(--border));
+        border-radius: var(--radius);
+        background: var(--admonition-bg, var(--code-bg));
+
+        > p {
+            margin: 8px 0;
+        }
+    }
+
+    .admonition-title {
+        font-weight: 600;
+        color: var(--admonition-color, var(--primary));
+    }
+
+    @each $type, $color in $admonition-colors-light {
+        .admonition-#{$type} {
+            --admonition-color: #{$color};
+            --admonition-bg: #{rgba($color, $admonition-bg-alpha-light)};
+        }
+    }
+}
+
+[data-theme="dark"] .md-content {
+    @each $type, $color in $admonition-colors-dark {
+        .admonition-#{$type} {
+            --admonition-color: #{$color};
+            --admonition-bg: #{rgba($color, $admonition-bg-alpha-dark)};
+        }
+    }
+}
+
+// Wiki links: a resolved [[link]] is a plain anchor; only the broken state
+// and embeds carry a class.
+.md-content .wikilink-broken {
+    color: $wikilink-broken-light;
+    text-decoration: underline wavy;
+    cursor: help;
+}
+
+[data-theme="dark"] .md-content .wikilink-broken {
+    color: $wikilink-broken-dark;
+}
+
+.md-content {
+    .wikilink-embed {
+        font-style: italic;
+        border-inline-start: 2px solid var(--secondary);
+        padding-inline-start: 6px;
+    }
+
+    // Task lists: - [x] items render a disabled checkbox.
+    li > input[type="checkbox"] {
+        margin-inline-end: 6px;
+        vertical-align: -1px;
+        accent-color: var(--primary);
+    }
+
+    li:has(> input[type="checkbox"]) {
+        list-style: none;
+        margin-inline-start: -20px;
+    }
+
+    // Footnotes: sup.footnote-reference in the text, div.footnote-definition
+    // blocks at the end of the page.
+    .footnote-reference {
+        font-size: 12px;
+    }
+
+    .footnote-definition {
+        display: flex;
+        gap: 8px;
+        margin: 12px 0;
+        font-size: 15px;
+        color: var(--secondary);
+
+        &:first-of-type {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+    }
+
+    .footnote-definition-label {
+        font-size: 12px;
+        line-height: 2;
+    }
+
+    .footnote-definition p {
+        margin: 0;
+    }
+
+    // The return arrow the theme script appends to each definition.
+    .footnote-backref {
+        margin-inline-start: 6px;
+        text-decoration: none;
+    }
+
+    // Definition lists.
+    dt {
+        font-weight: 600;
+        margin-top: 12px;
+    }
+
+    dd {
+        margin: 4px 0 12px;
+        padding-inline-start: 20px;
+    }
+
+    // Superscript and subscript: keep the line height steady.
+    sup,
+    sub {
+        line-height: 1;
+    }
+}
+
+// "Pages linking here" backlinks block (show_backlinks option).
+.post-backlinks {
+    margin: 24px 0;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    background: var(--code-bg);
+    font-size: 15px;
+
+    .backlinks-title {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    ul {
+        margin: 6px 0 0;
+        padding-inline-start: 20px;
+    }
+
+    a {
+        color: var(--secondary);
+
+        &:hover {
+            color: var(--primary);
+        }
+    }
+}

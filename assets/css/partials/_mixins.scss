@@ -1,0 +1,19 @@
+// Shared helpers.
+
+@use 'variables' as *;
+
+// Styles that apply only while the dark theme is active.
+//
+//     .card { @include dark { background: var(--entry); } }
+@mixin dark {
+    [data-theme="dark"] & {
+        @content;
+    }
+}
+
+// Styles for viewports at or below `$width`.
+@mixin below($width) {
+    @media screen and (max-width: $width) {
+        @content;
+    }
+}

@@ -1,0 +1,45 @@
+// CSS custom properties, filled from the Sass settings in `_variables.scss`.
+// They stay custom properties so the dark-mode toggle can swap them live.
+
+@use 'variables' as *;
+
+:root {
+    --gap: #{$gap};
+    --content-gap: #{$content-gap};
+    --nav-width: #{$nav-width};
+    --main-width: #{$main-width};
+    --header-height: #{$header-height};
+    --footer-height: #{$footer-height};
+    --radius: #{$radius};
+    --theme: #{$light-theme};
+    --entry: #{$light-entry};
+    --primary: #{$light-primary};
+    --secondary: #{$light-secondary};
+    --tertiary: #{$light-tertiary};
+    --content: #{$light-content};
+    --code-block-bg: #{$light-code-block-bg};
+    --code-bg: #{$light-code-bg};
+    --border: #{$light-border};
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    --theme: #{$dark-theme};
+    --entry: #{$dark-entry};
+    --primary: #{$dark-primary};
+    --secondary: #{$dark-secondary};
+    --tertiary: #{$dark-tertiary};
+    --content: #{$dark-content};
+    --code-block-bg: #{$dark-code-block-bg};
+    --code-bg: #{$dark-code-bg};
+    --border: #{$dark-border};
+    color-scheme: dark;
+}
+
+.list {
+    background: var(--code-bg);
+}
+
+[data-theme="dark"] .list {
+    background: var(--theme);
+}

@@ -1,0 +1,237 @@
+// Rendered Markdown inside `.md-content`, plus media elements.
+
+@use 'variables' as *;
+
+.md-content {
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 24px 0 16px;
+    }
+
+    h1 {
+        margin: 40px auto 32px;
+        font-size: 40px;
+    }
+
+    h2 {
+        margin: 32px auto 24px;
+        font-size: 32px;
+    }
+
+    h3 {
+        font-size: 24px;
+    }
+
+    h4 {
+        font-size: 16px;
+    }
+
+    h5 {
+        font-size: 14px;
+    }
+
+    h6 {
+        font-size: 12px;
+    }
+
+    a:not(.anchor) {
+        text-underline-offset: 0.3rem;
+        text-decoration: underline;
+    }
+
+    del {
+        text-decoration: line-through;
+    }
+
+    dl:not(:last-child),
+    ol:not(:last-child),
+    p:not(:last-child),
+    figure:not(:last-child),
+    ul:not(:last-child) {
+        margin-bottom: var(--content-gap);
+    }
+
+    ol,
+    ul {
+        padding-inline-start: 1.25rem;
+    }
+
+    li {
+        margin-top: 0.3rem;
+    }
+
+    li p {
+        margin-bottom: 0;
+    }
+
+    dl {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0;
+    }
+
+    dt {
+        width: 25%;
+        font-weight: 700;
+    }
+
+    dd {
+        width: 75%;
+        margin-inline-start: 0;
+        padding-inline-start: 10px;
+    }
+
+    dd ~ dd,
+    dt ~ dt {
+        margin-top: 10px;
+    }
+
+    table {
+        margin-bottom: var(--content-gap);
+        display: block;
+        max-width: fit-content;
+        overflow-x: auto;
+
+        th,
+        td {
+            min-width: 80px;
+            padding: 6px 13px;
+            line-height: 1.5;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            text-align: start;
+        }
+    }
+
+    // Fenced code blocks. Accent emits <pre> with inline syntect colors and
+    // no <code> wrapper, so the block styling lives on the <pre> itself. The
+    // background is forced to the theme's block color (always dark, as in
+    // PaperMod), overriding the highlighter's inline value.
+    pre {
+        margin: 0 0 var(--content-gap);
+        padding: 10px;
+        color: $code-block-color;
+        background: var(--code-block-bg) !important;
+        border-radius: var(--radius);
+        direction: ltr;
+        overflow-x: auto;
+        word-break: keep-all;
+        font-family: $font-family-mono;
+        font-size: 0.78em;
+        line-height: 1.5;
+    }
+}
+
+.post-content code,
+.md-content code {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.78em;
+    font-family: $font-family-mono;
+    line-height: 1.5;
+    background: var(--code-bg);
+    border-radius: 0.2rem;
+}
+
+.md-content {
+    pre code {
+        display: block;
+        padding: 0;
+        font-size: inherit;
+        color: inherit;
+        background: transparent;
+        border-radius: 0;
+    }
+
+    blockquote {
+        margin: 1rem 0;
+        padding-inline-start: 1rem;
+        border-inline-start: 0.3rem solid var(--content);
+    }
+
+    hr {
+        margin: 30px 0;
+        height: 2px;
+        background: var(--tertiary);
+        border: 0;
+    }
+
+    iframe {
+        max-width: 100%;
+    }
+
+    img {
+        border-radius: var(--radius);
+        margin: 1rem 0;
+    }
+
+    figure.align-center {
+        text-align: center;
+    }
+
+    figure > figcaption {
+        color: var(--primary);
+        font-size: 16px;
+        font-weight: bold;
+        margin: 8px 0 16px;
+
+        > p {
+            color: var(--secondary);
+            font-size: 14px;
+            font-weight: normal;
+        }
+    }
+
+    // Heading anchors (Accent emits <a class="heading-anchor"> inside
+    // headings with the "hash" style; shown on hover like PaperMod's).
+    .heading-anchor::after {
+        content: "#";
+    }
+
+    .heading-anchor {
+        visibility: hidden;
+        color: var(--secondary);
+        margin-inline-start: 0.5em;
+        font-weight: 500;
+        user-select: none;
+        text-decoration: none;
+    }
+
+    h1:hover .heading-anchor,
+    h2:hover .heading-anchor,
+    h3:hover .heading-anchor,
+    h4:hover .heading-anchor,
+    h5:hover .heading-anchor,
+    h6:hover .heading-anchor,
+    .heading-anchor:focus-visible {
+        visibility: visible;
+    }
+
+    .heading-anchor:hover {
+        color: var(--content);
+    }
+}
+
+mark {
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+audio {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    height: 2.5rem;
+    margin-bottom: var(--content-gap);
+}
+
+video {
+    border: 1px solid var(--code-bg);
+    border-radius: var(--radius);
+    max-width: 100%;
+}

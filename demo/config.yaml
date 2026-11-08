@@ -56,7 +56,7 @@ site:
         - name: github
           url: https://github.com/AccentCMS/accent
         - name: x
-          url: https://x.com/accentcms
+          url: https://x.com/Accent_CMS_dev
         - name: rss
           url: /feed.xml
 

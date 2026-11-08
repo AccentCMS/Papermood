@@ -1,0 +1,32 @@
+// Papermood - an Accent CMS theme in the spirit of hugo-PaperMod.
+// Color system, metrics, and component look translated from PaperMod
+// (MIT, https://github.com/adityatelange/hugo-PaperMod).
+//
+// Accent compiles this file to css/papermood.css. All tunable values live
+// in partials/_variables.scss. To change them, configure the variables
+// module here, before any other partial loads it:
+//
+//     @use 'partials/variables' with (
+//         $main-width: 800px,
+//         $radius: 4px,
+//         $light-primary: rgb(20, 40, 80),
+//     );
+//
+// The partials below are listed in cascade order; keep new rules in the
+// partial they belong to, or add your own partial at the end.
+
+@use 'partials/variables';
+
+@use 'partials/tokens';
+@use 'partials/reset';
+@use 'partials/header';
+@use 'partials/main';
+@use 'partials/post-entry';
+@use 'partials/post-single';
+@use 'partials/content';
+@use 'partials/listings';
+@use 'partials/footer';
+@use 'partials/components';
+@use 'partials/responsive';
+@use 'partials/diagrams';
+@use 'partials/markdown-extensions';

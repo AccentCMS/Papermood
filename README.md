@@ -5,7 +5,7 @@ follows the design of
 [hugo-PaperMod](https://github.com/adityatelange/hugo-PaperMod). The theme
 gives you post cards, a dark-mode toggle, archive pages, tag pages, and
 client-side search. It implements the full set of canonical components. The
-theme uses no webfonts and no frameworks. It loads one stylesheet and one
+theme uses no webfonts and no frameworks. It loads one stylesheet (compiled from SCSS) and one
 small script.
 
 ## Demo
@@ -148,6 +148,34 @@ site:
         buttons:
           - { name: Posts, url: /posts }
 ```
+
+## Customizing styles
+
+The stylesheet is written in SCSS. Accent compiles it to
+`css/papermood.css` at build time, so you need no extra tooling. The entry
+point is `assets/css/papermood.scss`. It loads one partial per area of the
+site from `assets/css/partials/`.
+
+`partials/_variables.scss` holds the values you can change: layout widths,
+gaps, the corner radius, breakpoints, fonts, the light and dark palettes,
+and the callout and admonition colors. Every value there is `!default`.
+To override some of them without editing the partial, configure the
+module at the top of `papermood.scss`:
+
+```scss
+@use 'partials/variables' with (
+    $main-width: 800px,
+    $radius: 4px,
+    $light-primary: rgb(20, 40, 80),
+    $dark-theme: rgb(16, 18, 24),
+);
+```
+
+The palette values become CSS custom properties (`--theme`, `--primary`,
+...), and the dark-mode toggle switches them at runtime. Rules in your own
+partials can use them directly. `partials/_mixins.scss` provides
+`@include dark { ... }` for dark-only rules and `@include below($width)`
+for media queries.
 
 ## Post frontmatter
 
